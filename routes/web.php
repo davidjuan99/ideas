@@ -18,4 +18,9 @@ use App\Http\Controllers\NoteController;
 //     return view('welcome');
 // });
 
-Route::get('/home', [NoteController::class,'index']);
+Route::get('/', [NoteController::class,'index']);
+Route::get('/home', [NoteController::class,'mostrarNotas']);
+Route::post('/eliminar', [NoteController::class, 'eliminarNota']);
+Route::post('/crearNota', [NoteController::class, 'crearNota']);
+Route::get('/actualizar/{id}', [NoteController::class, 'meterNotaForm']);
+Route::put('/modificar/{id}', [NoteController::class, 'modificarNota']);

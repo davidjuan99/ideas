@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NoteController extends Controller
 {
@@ -12,8 +13,14 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function mostrarNotas()
     {
+        $notas=DB::table('notes')->get();
+        // return view('home',compact('notas'));
+        return response()->json($notas, 200);
+    }
+
+    public function index() {
         return view('home');
     }
 
@@ -22,9 +29,44 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function eliminarNota(Request $request){
+        try {
+            DB::delete('DELETE FROM notes WHERE id=?', [$request->input('id'),$request->input('id')]);
+            //redirigir a la BBDD
+            return response()->json(array('resultado'=>'OK'), 200);
+        } catch (\Throwable $th) {
+            return response()->json(array('resultado'=>'NOK'.$th->getMessage()), 200);
+            //throw $th;
+        }
+        // return redirect('home');
+    }
+
+    public function crearNota(Request $request){
+        try {
+        $datos=$request->except('_token', 'Crear');
+        DB::insert('INSERT INTO notes(title,description) VALUES(?,?)', [$request->input('title'), $request->input('description')]);
+        // return redirect('home');
+        return response()->json(array('resultado'=>'OK'), 200);
+        } catch (\Throwable $th) {
+            return response()->json(array('resultado'=>'NOK'.$th->getMessage()), 200);
+        }
+    }
+
+    public function meterNotaForm($id){
+        $nota1=DB::table('notes')->where('id','=',$id)->first();
+    }
+
+    public function modificarNota($id, Request $request){
+        $datos=$request->except('_token','_method','actuali');
+        // return $datos;
+        DB::table('notes')->where('id','=',$id)->update($datos);
+        // redirigimos a la vista mostrar.
+        return redirect('home');
+    } 
+
     public function create()
     {
-        //
+       
     }
 
     /**
